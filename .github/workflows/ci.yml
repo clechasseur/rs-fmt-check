@@ -1,0 +1,46 @@
+name: CI
+
+on: [push]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create npm configuration
+        run: echo "//npm.pkg.github.com/:_authToken=${token}" >> ~/.npmrc
+        env:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test
+
+  rust-tests-clippy-warnings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: ./
+        with:
+          working-directory: rust_tests/clippy_warnings
+
+  rust-tests-cross:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-unknown-linux-gnu
+          components: clippy
+      - uses: ./
+        with:
+          args: --target aarch64-unknown-linux-gnu
+          use-cross: true
+          working-directory: rust_tests/clippy_warnings
