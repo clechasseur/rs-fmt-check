@@ -1,4 +1,6 @@
-# `rs-clippy-check` Action
+# `rs-fmt-check` Action
+
+_NOTE: This action is a work in progress._
 
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Continuous integration](https://github.com/clechasseur/rs-clippy-check/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/clechasseur/rs-clippy-check/actions/workflows/ci.yml)
