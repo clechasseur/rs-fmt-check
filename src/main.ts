@@ -15,10 +15,12 @@ export async function run(actionInput: input.Input): Promise<void> {
     program = await Cargo.get();
   }
 
+  const toolchain = actionInput.toolchain ? `+${actionInput.toolchain}` : '';
+
   // TODO: Simplify this block
   let rustcVersion = '';
   let cargoVersion = '';
-  let clippyVersion = '';
+  let rustfmtVersion = '';
   await exec.exec('rustc', ['-V'], {
     silent: true,
     listeners: {
@@ -31,21 +33,21 @@ export async function run(actionInput: input.Input): Promise<void> {
       stdout: (buffer: Buffer) => (cargoVersion = buffer.toString().trim()),
     },
   });
-  await program.call(['clippy', '-V'], {
+  await program.call(['fmt', toolchain, '--version'], {
     silent: true,
     listeners: {
-      stdout: (buffer: Buffer) => (clippyVersion = buffer.toString().trim()),
+      stdout: (buffer: Buffer) => (rustfmtVersion = buffer.toString().trim()),
     },
   });
 
   let args: string[] = [];
   // Toolchain selection MUST go first in any condition
-  if (actionInput.toolchain) {
-    args.push(`+${actionInput.toolchain}`);
+  if (toolchain) {
+    args.push(toolchain);
   }
-  args.push('clippy');
-  // `--message-format=json` should be right after the `cargo clippy`
-  // because usually people are adding the `-- -D warnings` at the end
+  args.push('fmt');
+  // `--message-format=json` should be right after the `cargo fmt`
+  // because usually people are adding the `-- ...` at the end
   // of arguments and it will mess up the output.
   args.push('--message-format=json');
 
@@ -65,10 +67,10 @@ export async function run(actionInput: input.Input): Promise<void> {
     options.cwd = path.join(process.cwd(), actionInput.workingDirectory);
   }
 
-  let clippyExitCode: number = 0;
+  let fmtExitCode: number = 0;
   try {
-    core.startGroup('Executing cargo clippy (JSON output)');
-    clippyExitCode = await program.call(args, options);
+    core.startGroup('Executing cargo fmt (JSON output)');
+    fmtExitCode = await program.call(args, options);
   } finally {
     core.endGroup();
   }
@@ -76,11 +78,11 @@ export async function run(actionInput: input.Input): Promise<void> {
   await runner.addSummary({
     rustc: rustcVersion,
     cargo: cargoVersion,
-    clippy: clippyVersion,
+    rustfmt: rustfmtVersion,
   });
 
-  if (clippyExitCode !== 0) {
-    throw new Error(`Clippy has exited with exit code ${clippyExitCode}`);
+  if (fmtExitCode !== 0) {
+    throw new Error(`Rustfmt has exited with exit code ${fmtExitCode}`);
   }
 }
 

@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "clippy_warnings"
+name = "fmt_warnings"
 version = "0.1.0"

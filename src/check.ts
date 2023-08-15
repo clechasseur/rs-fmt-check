@@ -23,7 +23,7 @@ interface DiagnosticSpan {
 export interface SummaryContext {
   rustc: string;
   cargo: string;
-  clippy: string;
+  rustfmt: string;
 }
 
 interface Stats {

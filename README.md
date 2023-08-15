@@ -42,7 +42,7 @@ All inputs are optional.
 
 | Name | Description | Type | Default |
 | --- | --- | --- | --- |
-| `toolchain` | Rust toolchain to use; override or system default toolchain will be used if omitted | string |         |
+| `toolchain` | Rust toolchain to use; see note below | string | `nightly` |
 | `args` | Arguments for the `cargo clippy` command | string |         |
 | `use-cross` | Use [`cross`](https://github.com/cross-rs/cross) instead of `cargo` | bool | `false` |
 | `working-directory` | Directory where to perform the `cargo clippy` command | string |         |

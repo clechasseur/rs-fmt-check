@@ -8,7 +8,7 @@ import stringArgv from 'string-argv';
 
 // Parsed action input
 export interface Input {
-  toolchain?: string;
+  toolchain: string;
   args: string[];
   useCross: boolean;
   workingDirectory?: string;
@@ -26,7 +26,7 @@ export function get(): Input {
   return {
     args: args,
     useCross: useCross,
-    toolchain: toolchain || undefined,
+    toolchain: toolchain,
     workingDirectory: workingDirectory || undefined,
   };
 }
