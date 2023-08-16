@@ -10,7 +10,7 @@ _NOTE: This action is a work in progress._
 This GitHub Action executes [`clippy`](https://github.com/rust-lang/rust-clippy)
 and posts all lints as annotations for the pushed commit.
 
-![Screenshot of a clippy warning displayed in the commit interface of GitHub](./.github/screenshot.png)
+![Screenshot of a clippy warning displayed in the commit interface of GitHub](./.github/screenshot_fmt.png)
 
 This GitHub Action has been forked from [actions-rs/clippy-check](https://github.com/actions-rs/clippy-check). The original project published under the name [`rust-clippy-check`](https://github.com/marketplace/actions/rust-clippy-check). See [LICENSE](LICENSE) for copyright attribution details.
 
