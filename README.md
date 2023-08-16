@@ -12,7 +12,7 @@ and posts all suggestions as annotations for the pushed commit.
 
 ## Example workflow
 
-Note: this workflow uses [`dtolnay/rust-toolchain`](https://github.com/dtolnay/rust-toolchain) to install the most recent `nightly` rustfmt <sup>1</sup>.
+Note: this workflow uses [`dtolnay/rust-toolchain`](https://github.com/dtolnay/rust-toolchain) to install the most recent `nightly` rustfmt [<sup>1</sup>](#note-nightly-requirement).
 
 ```yaml
 name: Rustfmt check
@@ -36,10 +36,10 @@ All inputs are optional.
 
 | Name | Description | Type | Default |
 | --- | --- | --- | --- |
-| `toolchain` | Rust toolchain to use <sup>1</sup> | string | `nightly` |
+| `toolchain` | Rust toolchain to use [<sup>1</sup>](#note-nightly-requirement) | string | `nightly` |
 | `args` | Arguments for the `cargo fmt` command | string |         |
 | `working-directory` | Directory where to perform the `cargo fmt` command | string |         |
 
 For extra details about the `toolchain` and `args` inputs, see [`rs-cargo` Action](https://github.com/clechasseur/rs-cargo#inputs).
 
-<sup>1</sup> : This action currently relies on an unstable `rustfmt` feature (`emit json`) and as such, requires a `nightly` toolchain at the minimum. You should not change the value of the `toolchain` parameter unless you know the specified toolchain supports the feature correctly.
+<a name="note-nightly-requirement"><sup>1</sup></a> : This action currently relies on an unstable `rustfmt` feature (`emit json`) and as such, requires a `nightly` toolchain at the minimum. You should not change the value of the `toolchain` parameter unless you know the specified toolchain supports the feature correctly.
