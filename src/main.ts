@@ -3,17 +3,12 @@ import path from 'path';
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 
-import { Cargo, Cross } from '@clechasseur/rs-actions-core';
+import { Cargo } from '@clechasseur/rs-actions-core';
 import * as input from './input';
 import { CheckRunner } from './check';
 
 export async function run(actionInput: input.Input): Promise<void> {
-  let program;
-  if (actionInput.useCross) {
-    program = await Cross.getOrInstall();
-  } else {
-    program = await Cargo.get();
-  }
+  const program = await Cargo.get();
 
   const toolchain = actionInput.toolchain ? `+${actionInput.toolchain}` : '';
 
@@ -33,7 +28,7 @@ export async function run(actionInput: input.Input): Promise<void> {
       stdout: (buffer: Buffer) => (cargoVersion = buffer.toString().trim()),
     },
   });
-  await program.call(['fmt', toolchain, '--version'], {
+  await program.call([toolchain, 'fmt', '--version'], {
     silent: true,
     listeners: {
       stdout: (buffer: Buffer) => (rustfmtVersion = buffer.toString().trim()),
@@ -53,7 +48,7 @@ export async function run(actionInput: input.Input): Promise<void> {
 
   args = args.concat(actionInput.args);
 
-  const runner = new CheckRunner(actionInput.workingDirectory);
+  const runner = new CheckRunner(process.cwd());
   const options: exec.ExecOptions = {
     ignoreReturnCode: true,
     failOnStdErr: false,

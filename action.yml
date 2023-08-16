@@ -8,9 +8,6 @@ inputs:
   args:
     description: Arguments for the cargo fmt command
     required: false
-  use-cross:
-    description: Use cross instead of cargo
-    default: false
   working-directory:
     description: Directory where to perform cargo fmt command
     required: false
