@@ -42,4 +42,6 @@ All inputs are optional.
 
 For extra details about the `toolchain` and `args` inputs, see [`rs-cargo` Action](https://github.com/clechasseur/rs-cargo#inputs).
 
+## Notes
+
 <a name="note-nightly-requirement"><sup>1</sup></a> : This action currently relies on an unstable `rustfmt` feature (`emit json`) and as such, requires a `nightly` toolchain at the minimum. You should not change the value of the `toolchain` parameter unless you know the specified toolchain supports the feature correctly.
