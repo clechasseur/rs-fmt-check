@@ -3,17 +3,12 @@ import path from 'path';
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 
-import { Cargo, Cross } from '@clechasseur/rs-actions-core';
+import { Cargo } from '@clechasseur/rs-actions-core';
 import * as input from './input';
 import { CheckRunner } from './check';
 
 export async function run(actionInput: input.Input): Promise<void> {
-  let program;
-  if (actionInput.useCross) {
-    program = await Cross.getOrInstall();
-  } else {
-    program = await Cargo.get();
-  }
+  const program = await Cargo.get();
 
   const toolchain = actionInput.toolchain ? `+${actionInput.toolchain}` : '';
 

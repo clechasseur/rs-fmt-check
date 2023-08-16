@@ -46,13 +46,7 @@ export class CheckRunner {
 
     return core.summary
       .addHeading('Results')
-      .addTable([
-        [
-          { data: 'Message kind', header: true },
-          { data: 'Amount', header: true },
-        ],
-        ['Suggestions', `${this.suggestions}`],
-      ])
+      .addRaw(`Suggestions: ${this.suggestions}`, true)
       .addHeading('Versions')
       .addList([context.rustc, context.cargo, context.rustfmt])
       .write()
