@@ -15,5 +15,5 @@ runs:
   using: 'node16'
   main: 'dist/index.js'
 branding:
-  icon: pen-tool
+  icon: clipboard
   color: black
