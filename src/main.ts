@@ -33,7 +33,7 @@ export async function run(actionInput: input.Input): Promise<void> {
       stdout: (buffer: Buffer) => (cargoVersion = buffer.toString().trim()),
     },
   });
-  await program.call(['fmt', toolchain, '--version'], {
+  await program.call([toolchain, 'fmt', '--version'], {
     silent: true,
     listeners: {
       stdout: (buffer: Buffer) => (rustfmtVersion = buffer.toString().trim()),
@@ -53,7 +53,7 @@ export async function run(actionInput: input.Input): Promise<void> {
 
   args = args.concat(actionInput.args);
 
-  const runner = new CheckRunner(actionInput.workingDirectory);
+  const runner = new CheckRunner(process.cwd());
   const options: exec.ExecOptions = {
     ignoreReturnCode: true,
     failOnStdErr: false,
