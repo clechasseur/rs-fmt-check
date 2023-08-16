@@ -60,6 +60,7 @@ export class CheckRunner {
 
       suggestion.mismatches.forEach((mismatch) => {
         const properties: core.AnnotationProperties = {
+          title: this.annotationTitle(mismatch),
           file: fileName,
           startLine: mismatch.original_begin_line,
           endLine: mismatch.original_end_line,
@@ -69,5 +70,18 @@ export class CheckRunner {
         core.warning(mismatch.expected, properties);
       });
     });
+  }
+
+  private annotationTitle(mismatch: Mismatch): string {
+    const linesMsg = this.linesMsg(mismatch);
+    const replacementLines =
+      mismatch.expected_end_line - mismatch.expected_begin_line + 1;
+    return `Suggested formatting at ${linesMsg} (replaced with ${replacementLines} lines)`;
+  }
+
+  private linesMsg(mismatch: Mismatch): string {
+    return mismatch.original_begin_line == mismatch.original_end_line
+      ? `line ${mismatch.original_begin_line}`
+      : `lines ${mismatch.original_begin_line}-${mismatch.original_end_line}`;
   }
 }
