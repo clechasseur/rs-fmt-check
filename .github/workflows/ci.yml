@@ -30,3 +30,4 @@ jobs:
       - uses: ./
         with:
           working-directory: rust_tests/fmt_warnings
+        continue-on-error: true

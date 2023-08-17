@@ -76,8 +76,16 @@ export async function run(actionInput: input.Input): Promise<void> {
     rustfmt: rustfmtVersion,
   });
 
+  // Currently, it seems rustfmt only returns a non-zero exit code if
+  // a parsing error occurs - not if there are suggestions. So we'll
+  // check both the exit code *and* whether it has returned any suggestions.
   if (fmtExitCode !== 0) {
     throw new Error(`Rustfmt has exited with exit code ${fmtExitCode}`);
+  }
+  if (runner.annotationsCount > 0) {
+    throw new Error(
+      `Rustfmt has exited with ${runner.annotationsCount} suggestions`,
+    );
   }
 }
 

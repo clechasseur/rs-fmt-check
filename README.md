@@ -6,7 +6,7 @@
 > Rustfmt suggestions in your Pull Requests
 
 This GitHub Action executes [`rustfmt`](https://github.com/rust-lang/rustfmt)
-and posts all suggestions as annotations for the pushed commit.
+and posts all suggestions as annotations for the pushed commit [<sup>2</sup>](#note-annotations-limit).
 
 ![Screenshot of a rustfmt suggestion displayed in the commit interface of GitHub](./.github/screenshot_fmt.png)
 
@@ -47,3 +47,5 @@ For extra details about the `toolchain` and `args` inputs, see [`rs-cargo` Actio
 ## Notes
 
 <a name="note-nightly-requirement"><sup>1</sup></a> : This action currently relies on an unstable `rustfmt` feature (`emit json`) and as such, requires a `nightly` toolchain at the minimum. You should not change the value of the `toolchain` parameter unless you know the specified toolchain supports the feature correctly.
+
+<a name="note-annotations-limit"><sup>2</sup></a> : Currently, GitHub sets a limit of 10 warning annotations per run (see [this page](https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28) for more information). So if there are more than 10 suggestions returned by `rustfmt`, only the first 10 will appear as PR annotations. The other suggestions will still appear in the check run summary (see [this one](https://github.com/clechasseur/rs-fmt-check/actions/runs/5886828621) for example).
