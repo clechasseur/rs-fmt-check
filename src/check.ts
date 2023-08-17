@@ -86,7 +86,7 @@ export class CheckRunner {
             true,
           );
 
-          return `${linesMsg}\n\n\`\`\`\n${fileAnnotation.content}\n\`\`\``;
+          return `${linesMsg}\n\n\`\`\`\n${fileAnnotation.content}\n\`\`\`\n`;
         })
         .join('\n');
 
