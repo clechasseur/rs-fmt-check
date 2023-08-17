@@ -1,6 +1,6 @@
 {
   "name": "rs-fmt-check",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "private": false,
   "description": "Run rustfmt and annotate the diff with suggested changes",
   "main": "dist/index.js",
