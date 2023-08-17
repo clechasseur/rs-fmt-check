@@ -77,7 +77,7 @@ export class CheckRunner {
     // Now generate the summary with all annotations included.
     core.summary.addHeading('Results');
     for (const fileAnnotations of this.fileAnnotations) {
-      const label = `\`${fileAnnotations.fileName}\``;
+      const label = `<code>${fileAnnotations.fileName}</code>`;
       const content = fileAnnotations.annotations
         .map((fileAnnotation) => {
           const linesMsg = this.linesMsg(
@@ -86,7 +86,7 @@ export class CheckRunner {
             true,
           );
 
-          return `#### ${linesMsg}\n\n\`\`\`\n${fileAnnotation.content}\n\`\`\`\n`;
+          return `<h4>${linesMsg}</h4>\n\n\`\`\`\n${fileAnnotation.content}\`\`\``;
         })
         .join('\n');
 
