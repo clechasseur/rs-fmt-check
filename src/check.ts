@@ -86,9 +86,9 @@ export class CheckRunner {
             true,
           );
 
-          return `<h4>${linesMsg}</h4>\n\n\`\`\`\n${fileAnnotation.content}\`\`\``;
+          return `\n#### ${linesMsg}\n\n\`\`\`\n${fileAnnotation.content}\`\`\``;
         })
-        .join('\n');
+        .join('');
 
       core.summary.addDetails(label, content);
     }
