@@ -33,14 +33,18 @@ export interface SummaryContext {
 }
 
 export class CheckRunner {
-  private rootDirectory: string;
-  private fileAnnotations: Array<FileAnnotations>;
-  private annotationsCount: number;
+  private _rootDirectory: string;
+  private _fileAnnotations: Array<FileAnnotations>;
+  private _annotationsCount: number;
 
   constructor(rootDirectory: string) {
-    this.rootDirectory = `${rootDirectory}/`;
-    this.fileAnnotations = [];
-    this.annotationsCount = 0;
+    this._rootDirectory = `${rootDirectory}/`;
+    this._fileAnnotations = [];
+    this._annotationsCount = 0;
+  }
+
+  public get annotationsCount(): number {
+    return this._annotationsCount;
   }
 
   public tryPush(line: string): void {
@@ -61,7 +65,7 @@ export class CheckRunner {
     // Add all the annotations now. It is limited to 10, but it's better than nothing.
     // All annotations will also be included in the summary, below.
     // For more information, see https://docs.github.com/en/rest/checks/runs?apiVersion=2022-11-28
-    this.fileAnnotations.forEach((fileAnnotations) => {
+    this._fileAnnotations.forEach((fileAnnotations) => {
       fileAnnotations.annotations.forEach((fileAnnotation) => {
         const properties: core.AnnotationProperties = {
           title: fileAnnotation.title,
@@ -76,7 +80,7 @@ export class CheckRunner {
 
     // Now generate the summary with all annotations included.
     core.summary.addHeading('Results');
-    for (const fileAnnotations of this.fileAnnotations) {
+    for (const fileAnnotations of this._fileAnnotations) {
       const label = fileAnnotations.fileName;
       const content = fileAnnotations.annotations
         .map((fileAnnotation) => {
@@ -104,7 +108,7 @@ export class CheckRunner {
     contents.forEach((suggestion) => {
       const fileAnnotations: FileAnnotations = {
         // Fix file_name to remove root directory
-        fileName: suggestion.name.replace(this.rootDirectory, ''),
+        fileName: suggestion.name.replace(this._rootDirectory, ''),
         annotations: suggestion.mismatches.map((mismatch) => ({
           title: this.annotationTitle(mismatch),
           beginLine: mismatch.original_begin_line,
@@ -113,8 +117,8 @@ export class CheckRunner {
         })),
       };
 
-      this.fileAnnotations.push(fileAnnotations);
-      this.annotationsCount += fileAnnotations.annotations.length;
+      this._fileAnnotations.push(fileAnnotations);
+      this._annotationsCount += fileAnnotations.annotations.length;
     });
   }
 
