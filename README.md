@@ -25,11 +25,11 @@ jobs:
   rustfmt_check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: rustfmt
-      - uses: clechasseur/rs-fmt-check@v1
+      - uses: clechasseur/rs-fmt-check@v2
 ```
 
 ## Inputs
