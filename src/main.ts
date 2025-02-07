@@ -8,9 +8,7 @@ import * as input from './input';
 import { CheckRunner } from './check';
 
 export async function run(actionInput: input.Input): Promise<void> {
-  const program = await Cargo.get();
-
-  const toolchain = actionInput.toolchain ? `+${actionInput.toolchain}` : '';
+  const program = await Cargo.get(actionInput.toolchain);
 
   // TODO: Simplify this block
   let rustcVersion = '';
@@ -28,7 +26,7 @@ export async function run(actionInput: input.Input): Promise<void> {
       stdout: (buffer: Buffer) => (cargoVersion = buffer.toString().trim()),
     },
   });
-  await program.call([toolchain, 'fmt', '--version'], {
+  await program.call(['fmt', '--version'], {
     silent: true,
     listeners: {
       stdout: (buffer: Buffer) => (rustfmtVersion = buffer.toString().trim()),
@@ -36,14 +34,10 @@ export async function run(actionInput: input.Input): Promise<void> {
   });
 
   let args: string[] = [];
-  // Toolchain selection MUST go first in any condition
-  if (toolchain) {
-    args.push(toolchain);
-  }
   args.push('fmt');
   // `--message-format=json` should be right after the `cargo fmt`
   // because usually people are adding the `-- ...` at the end
-  // of arguments and it will mess up the output.
+  // of arguments, and it will mess up the output.
   args.push('--message-format=json');
 
   args = args.concat(actionInput.args);
