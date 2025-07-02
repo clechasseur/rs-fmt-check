@@ -1,6 +1,6 @@
 {
   "name": "rs-fmt-check",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "private": false,
   "description": "Run rustfmt and annotate the diff with suggested changes",
   "main": "dist/index.js",
@@ -27,7 +27,7 @@
     "url": "https://github.com/clechasseur/rs-fmt-check/issues"
   },
   "dependencies": {
-    "@clechasseur/rs-actions-core": "^5.0.3",
+    "@clechasseur/rs-actions-core": "^5.0.4",
     "string-argv": "^0.3.2"
   },
   "devDependencies": {
