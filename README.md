@@ -5,8 +5,7 @@
 
 > Rustfmt suggestions in your Pull Requests
 
-This GitHub Action executes [`rustfmt`](https://github.com/rust-lang/rustfmt)
-and posts all suggestions as annotations for the pushed commit [<sup>2</sup>](#note-annotations-limit).
+This GitHub Action executes [`rustfmt`](https://github.com/rust-lang/rustfmt) and posts all suggestions as annotations for the pushed commit [<sup>2</sup>](#note-annotations-limit).
 
 ![Screenshot of a rustfmt suggestion displayed in the commit interface of GitHub](./.github/screenshot_fmt.png)
 
@@ -25,12 +24,12 @@ jobs:
   rustfmt_check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: actions-rust-lang/setup-rust-toolchain@9399c7bb15d4c7d47b27263d024f0a4978346ba4 # v1.11.0
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions-rust-lang/setup-rust-toolchain@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           toolchain: nightly
           components: rustfmt
-      - uses: clechasseur/rs-fmt-check@e1bd0f5c24ced02542ed905bde212ffc9c324863 # v2.0.8
+      - uses: clechasseur/rs-fmt-check@v4.0.0
 ```
 
 ## Inputs
@@ -44,6 +43,12 @@ All inputs are optional.
 | `working-directory` | Directory where to perform the `cargo fmt` command | string |         |
 
 For extra details about the `toolchain` and `args` inputs, see [`rs-cargo` Action](https://github.com/clechasseur/rs-cargo#inputs).
+
+## Release immutability
+
+Starting with release 4.0.0, this GitHub action's releases will be marked as [immutable](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases). This means that once a release is created, its tag cannot be modified in any way.
+
+Previously, best practices for using GitHub actions in workflows were to pin the actions to a specific Git commit hash. With immutable releases, this is no longer necessary and the actual Git tag is safe to use. Because of this, starting with release 4.0.0, this GitHub action will **no longer provide a floating major version tag** (like `v4`, for example). To use a specific version of this action, pin it to the release tag (like `v4.0.0`).
 
 ## Notes
 

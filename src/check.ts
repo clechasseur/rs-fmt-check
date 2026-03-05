@@ -52,7 +52,7 @@ export class CheckRunner {
     try {
       contents = JSON.parse(line);
     } catch (error) {
-      core.debug('Not JSON, ignoring it');
+      core.debug(`Not JSON, ignoring it: ${error}`);
       return;
     }
 
@@ -79,29 +79,31 @@ export class CheckRunner {
     });
 
     // Now generate the summary with all annotations included.
-    core.summary.addHeading('Results');
-    for (const fileAnnotations of this._fileAnnotations) {
-      const label = fileAnnotations.fileName;
-      const content = fileAnnotations.annotations
-        .map((fileAnnotation) => {
-          const linesMsg = this.linesMsg(
-            fileAnnotation.beginLine,
-            fileAnnotation.endLine,
-            true,
-          );
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      core.summary.addHeading('Results');
+      for (const fileAnnotations of this._fileAnnotations) {
+        const label = fileAnnotations.fileName;
+        const content = fileAnnotations.annotations
+          .map((fileAnnotation) => {
+            const linesMsg = this.linesMsg(
+              fileAnnotation.beginLine,
+              fileAnnotation.endLine,
+              true,
+            );
 
-          return `${linesMsg}\n\n\`\`\`\n${fileAnnotation.content}\n\`\`\`\n`;
-        })
-        .join('\n');
+            return `${linesMsg}\n\n\`\`\`\n${fileAnnotation.content}\n\`\`\`\n`;
+          })
+          .join('\n');
 
-      core.summary.addDetails(label, content);
+        core.summary.addDetails(label, content);
+      }
+
+      return core.summary
+        .addHeading('Versions')
+        .addList([context.rustc, context.cargo, context.rustfmt])
+        .write()
+        .then((_summary) => {});
     }
-
-    return core.summary
-      .addHeading('Versions')
-      .addList([context.rustc, context.cargo, context.rustfmt])
-      .write()
-      .then((_summary) => {});
   }
 
   private addAnnotations(contents: Suggestion[]): void {
