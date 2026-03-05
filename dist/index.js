@@ -79743,7 +79743,7 @@ class CheckRunner {
             contents = JSON.parse(line);
         }
         catch (error) {
-            debug('Not JSON, ignoring it');
+            debug(`Not JSON, ignoring it: ${error}`);
             return;
         }
         this.addAnnotations(contents);

@@ -52,7 +52,7 @@ export class CheckRunner {
     try {
       contents = JSON.parse(line);
     } catch (error) {
-      core.debug('Not JSON, ignoring it');
+      core.debug(`Not JSON, ignoring it: ${error}`);
       return;
     }
 
