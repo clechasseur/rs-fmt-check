@@ -9,7 +9,8 @@ This GitHub Action executes [`rustfmt`](https://github.com/rust-lang/rustfmt) an
 
 ![Screenshot of a rustfmt suggestion displayed in the commit interface of GitHub](./.github/screenshot_fmt.png)
 
-This GitHub Action is based on [clechasseur/rs-clippy-check](https://github.com/clechasseur/rs-clippy-check), which itself has been forked from [actions-rs/clippy-check](https://github.com/actions-rs/clippy-check). See [LICENSE](LICENSE) for copyright attribution details.
+This GitHub Action is based on [clechasseur/rs-clippy-check](https://github.com/clechasseur/rs-clippy-check), which itself has been forked from [actions-rs/clippy-check](https://github.com/actions-rs/clippy-check).
+See [LICENSE](LICENSE) for copyright attribution details.
 
 ## Example workflow
 
@@ -36,11 +37,11 @@ jobs:
 
 All inputs are optional.
 
-| Name | Description | Type | Default |
-| --- | --- | --- | --- |
+| Name | Description                                                     | Type | Default |
+| --- |-----------------------------------------------------------------| --- | --- |
 | `toolchain` | Rust toolchain to use [<sup>1</sup>](#note-nightly-requirement) | string | `nightly` |
-| `args` | Arguments for the `cargo fmt` command | string |         |
-| `working-directory` | Directory where to perform the `cargo fmt` command | string |         |
+| `args` | Arguments for the `cargo fmt` command                           | string |         |
+| `working-directory` | Directory where to perform the `cargo fmt` command              | string |         |
 
 For extra details about the `toolchain` and `args` inputs, see [`rs-cargo` Action](https://github.com/clechasseur/rs-cargo#inputs).
 
