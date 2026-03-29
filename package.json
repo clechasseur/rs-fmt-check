@@ -1,6 +1,6 @@
 {
   "name": "rs-fmt-check",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "type": "module",
   "private": true,
   "description": "Run rustfmt and annotate the diff with suggested changes",
