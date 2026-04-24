@@ -29,7 +29,7 @@
     "url": "https://github.com/clechasseur/rs-fmt-check/issues"
   },
   "dependencies": {
-    "@actions/core": "^3.0.0",
+    "@actions/core": "^3.0.1",
     "@actions/exec": "^3.0.0",
     "@clechasseur/rs-actions-core": "^7.0.6",
     "string-argv": "^0.3.2"
