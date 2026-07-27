@@ -1,6 +1,6 @@
 {
   "name": "rs-fmt-check",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "type": "module",
   "private": true,
   "description": "Run rustfmt and annotate the diff with suggested changes",
@@ -31,7 +31,7 @@
   "dependencies": {
     "@actions/core": "^3.0.1",
     "@actions/exec": "^3.0.0",
-    "@clechasseur/rs-actions-core": "^8.0.2",
+    "@clechasseur/rs-actions-core": "^8.0.3",
     "string-argv": "^0.3.2"
   },
   "devDependencies": {
@@ -48,5 +48,8 @@
     "rollup": "^4.62.2",
     "ts-jest": "^29.4.12",
     "typescript": "^6.0.3"
+  },
+  "allowScripts": {
+    "unrs-resolver@1.12.2": true
   }
 }
