@@ -2,13 +2,16 @@ import path from 'node:path';
 
 import * as core from '@actions/core';
 import * as exec from '@actions/exec';
-import { Cargo } from '@clechasseur/rs-actions-core';
+import { Cargo, CargoOptions } from '@clechasseur/rs-actions-core';
 
 import { CheckRunner } from './check.js';
 import * as input from './input.js';
 
 export async function run(actionInput: input.Input): Promise<void> {
-  const program = await Cargo.get(actionInput.toolchain);
+  const cargoOptions: CargoOptions = {
+    toolchain: actionInput.toolchain,
+  };
+  const program = await Cargo.get(cargoOptions);
 
   // TODO: Simplify this block
   let rustcVersion = '';

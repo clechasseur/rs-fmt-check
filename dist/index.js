@@ -83414,51 +83414,28 @@ function saveCacheV2(paths_1, key_1, options_1) {
 }
 
 /**
- * Computes the argument to pass to cargo to specify a toolchain.
+ * Wrapper for the `cargo` command.
  *
- * @param toolchain Toolchain to use, or `undefined` to use the default toolchain.
- * @returns Cargo toolchain argument. Either an empty string if the default
- *          toolchain must be used, or a toolchain identifier prepended with `+`.
+ * To obtain the currently installed `cargo`, call {@link Cargo.get}.
  */
-function cargoToolchainArg(toolchain) {
-    if (!toolchain) {
-        return '';
-    }
-    return toolchain.startsWith('+') ? toolchain : `+${toolchain}`;
-}
-/**
- * Resolves the latest version of a Cargo crate by contacting crates.io.
- *
- * @param crate Crate name.
- * @returns Latest crate version.
- */
-async function resolveVersion(crate) {
-    const url = `https://crates.io/api/v1/crates/${crate}`;
-    const client = new HttpClient('@clechasseur/rs-actions-core (https://github.com/clechasseur/rs-actions-core)');
-    const resp = await client.getJson(url); // eslint-disable-line @typescript-eslint/no-explicit-any
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (!resp.result) {
-        throw new Error('Unable to fetch latest crate version');
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
-    return resp.result.crate.newest_version;
-}
 class Cargo {
     path;
-    toolchain;
-    constructor(path, toolchain) {
+    options;
+    cargoEnv;
+    constructor(path, options) {
         this.path = path;
-        this.toolchain = cargoToolchainArg(toolchain);
+        this.options = options;
+        this.cargoEnv = getCargoEnv(options);
     }
     /**
-     * Fetches the currently-installed version of cargo.
+     * Fetches the currently-installed version of `cargo`.
      *
-     * @param toolchain Optional toolchain to use when executing cargo commands.
+     * @param options Options to use when calling `cargo`.
      */
-    static async get(toolchain) {
+    static async get(options) {
         try {
             const path = await which('cargo', true);
-            return new Cargo(path, toolchain);
+            return new Cargo(path, options);
         }
         catch (error$1) {
             error('cargo is not installed by default for some virtual environments, \
@@ -83472,37 +83449,51 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
      * executes `cargo install ${program}` and caches the result.
      *
      * @param program Program to install.
-     * @param version Program version to install. If `undefined` or set to `'latest'`,
-     *                the latest version will be installed.
-     * @param primaryKey Primary cache key to use when caching program. If not
-     *                   specified, a default cache key will be used. If set to
-     *                   `no-cache`, caching is disabled.
-     * @param restoreKeys Optional additional cache keys to use when looking for
-     *                    a cached version of the program.
+     * @param options Optional installation options.
      * @returns Path to installed program. Since program will be installed in
      *          the cargo bin directory which is on the `PATH`, this will be
-     *          equal to `program` currently.
+     *          equal to `program` currently (unless Cargo's
+     *          {@link CargoOptions.home home} is customized).
      */
-    async install(program, version, primaryKey, restoreKeys) {
-        if (!version || version === 'latest') {
-            version = (await resolveVersion(program)) ?? '';
+    async install(program, options) {
+        const installOptions = {
+            ...options,
+            primaryKey: options?.primaryKey ?? 'rs-actions-core',
+        };
+        if (!installOptions.version || installOptions.version === 'latest') {
+            installOptions.version = (await resolveVersion(program)) ?? '';
         }
-        primaryKey ??= 'rs-actions-core';
-        const paths = [path.join(path.dirname(this.path), program)];
-        const programKey = `${program}-${version}-${primaryKey}`;
-        const programRestoreKeys = (restoreKeys ?? []).map((key) => `${program}-${version}-${key}`);
-        if (primaryKey !== 'no-cache') {
-            const cacheKey = await restoreCache(paths, programKey, programRestoreKeys);
+        const paths = [
+            path.join(...(this.options?.home
+                ? [this.options.home, 'bin']
+                : [path.dirname(this.path)]), program),
+        ];
+        const programKey = `${program}-${installOptions.version}-${installOptions.primaryKey}`;
+        const programRestoreKeys = (installOptions.restoreKeys ?? []).map((key) => `${program}-${installOptions.version}-${key}`);
+        if (installOptions.primaryKey !== 'no-cache') {
+            let cacheKey;
+            try {
+                startGroup(`Looking for "${program}" in cache`);
+                cacheKey = await restoreCache(paths, programKey, programRestoreKeys);
+            }
+            finally {
+                endGroup();
+            }
             if (cacheKey) {
-                info(`Using cached \`${program}\` with version \`${version}\``);
+                info(`Using cached "${program}" with version "${installOptions.version}"`);
                 return program;
             }
         }
-        const installPath = await this.cargoInstall(program, version);
-        if (primaryKey !== 'no-cache') {
+        const installPath = await this.cargoInstall(program, installOptions.version, installOptions.locked ?? true);
+        if (installOptions.primaryKey !== 'no-cache') {
             try {
-                info(`Caching \`${program}\` with key \`${programKey}\``);
-                await saveCache(paths, programKey);
+                try {
+                    startGroup(`Caching "${program}" with key "${programKey}"`);
+                    await saveCache(paths, programKey);
+                }
+                finally {
+                    endGroup();
+                }
             }
             catch (error) {
                 if (error.name === ValidationError.name) {
@@ -83512,30 +83503,38 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
                     info(error.message);
                 }
                 else {
-                    info(`[warning] ${error.message}`);
+                    warning(error.message);
                 }
             }
         }
         return installPath;
     }
     /**
-     * Runs a cargo command.
+     * Runs a `cargo` command.
      *
-     * @param args Arguments to pass to cargo.
+     * @param args Arguments to pass to `cargo`.
      * @param options Optional exec options.
      * @returns Cargo exit code.
      */
     async call(args, options) {
-        return await exec(this.path, this.callArgs(args), options);
+        const callArgs = cargoCallArgs(args, this.options);
+        const execOptions = {
+            ...options,
+            env: {
+                ...this.cargoEnv,
+                ...options?.env,
+            },
+        };
+        return await exec(this.path, callArgs, execOptions);
     }
-    callArgs(args) {
-        return this.toolchain ? [this.toolchain, ...args] : args;
-    }
-    async cargoInstall(program, version) {
+    async cargoInstall(program, version, locked) {
         const args = ['install'];
         if (version !== 'latest') {
             args.push('--version');
             args.push(version);
+        }
+        if (locked) {
+            args.push('--locked');
         }
         args.push(program);
         try {
@@ -83545,8 +83544,61 @@ see https://help.github.com/en/articles/software-in-virtual-environments-for-git
         finally {
             endGroup();
         }
+        if (this.options?.home) {
+            return path.join(this.options.home, 'bin', program);
+        }
         return program;
     }
+}
+/**
+ * Computes the arguments to pass when calling `cargo` for the given options.
+ * Takes care of checking if options override the toolchain, etc.
+ *
+ * @param args Arguments to pass to `cargo`.
+ * @param options Options to use when calling `cargo`.
+ * @returns Actual list of parameters to pass to `cargo`, including extra
+ *          parameters like the toolchain, etc.
+ */
+function cargoCallArgs(args, options) {
+    const toolchainArg = options?.toolchain
+        ? [`${options.toolchain.startsWith('+') ? '' : '+'}${options.toolchain}`]
+        : [];
+    return [...toolchainArg, ...args];
+}
+/**
+ * Resolves the latest version of a Cargo crate by contacting crates.io.
+ *
+ * @param crate Crate name.
+ * @returns Latest crate version.
+ */
+async function resolveVersion(crate) {
+    const url = `https://crates.io/api/v1/crates/${crate}`;
+    const client = new HttpClient('@clechasseur/rs-actions-core (https://github.com/clechasseur/rs-actions-core)');
+    const resp = await client.getJson(url);
+    if (!resp.result) {
+        throw new Error(`Unable to fetch latest crate version for "${crate}"`);
+    }
+    return resp.result.crate.newest_version;
+}
+/**
+ * Returns a dictionary of environment variables that can be passed to `cargo`
+ * via {@link exec.ExecOptions.env}. The environment variables will be a copy
+ * of this process' environment, adjusted according to the given options.
+ *
+ * @param options Options to use to modify the `cargo` environment.
+ * @returns Dictionary of `cargo` environment variables.
+ */
+function getCargoEnv(options) {
+    const cargoEnv = {};
+    for (const [key, value] of Object.entries(process.env)) {
+        if (value !== undefined) {
+            cargoEnv[key] = value;
+        }
+    }
+    if (options?.home !== undefined) {
+        cargoEnv['CARGO_HOME'] = options.home;
+    }
+    return cargoEnv;
 }
 
 (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -89035,7 +89087,10 @@ class CheckRunner {
 }
 
 async function run(actionInput) {
-    const program = await Cargo.get(actionInput.toolchain);
+    const cargoOptions = {
+        toolchain: actionInput.toolchain,
+    };
+    const program = await Cargo.get(cargoOptions);
     // TODO: Simplify this block
     let rustcVersion = '';
     let cargoVersion = '';
