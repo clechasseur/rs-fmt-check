@@ -30,7 +30,7 @@ jobs:
         with:
           toolchain: nightly
           components: rustfmt
-      - uses: clechasseur/rs-fmt-check@v4.1.0
+      - uses: clechasseur/rs-fmt-check@v4.0.8
 ```
 
 ## Inputs
