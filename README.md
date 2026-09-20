@@ -25,23 +25,23 @@ jobs:
   rustfmt_check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - uses: actions-rust-lang/setup-rust-toolchain@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions-rust-lang/setup-rust-toolchain@ecabd13d1c56bd1345c230e542e9144811ad706f # v2.0.0
         with:
           toolchain: nightly
           components: rustfmt
-      - uses: clechasseur/rs-fmt-check@v4.0.5
+      - uses: clechasseur/rs-fmt-check@v4.1.0
 ```
 
 ## Inputs
 
 All inputs are optional.
 
-| Name | Description                                                     | Type | Default |
-| --- |-----------------------------------------------------------------| --- | --- |
-| `toolchain` | Rust toolchain to use [<sup>1</sup>](#note-nightly-requirement) | string | `nightly` |
-| `args` | Arguments for the `cargo fmt` command                           | string |         |
-| `working-directory` | Directory where to perform the `cargo fmt` command              | string |         |
+| Name                | Description                                                     | Type   | Default   |
+| ------------------- | --------------------------------------------------------------- | ------ | --------- |
+| `toolchain`         | Rust toolchain to use [<sup>1</sup>](#note-nightly-requirement) | string | `nightly` |
+| `args`              | Arguments for the `cargo fmt` command                           | string |           |
+| `working-directory` | Directory where to perform the `cargo fmt` command              | string |           |
 
 For extra details about the `toolchain` and `args` inputs, see [`rs-cargo` Action](https://github.com/clechasseur/rs-cargo#inputs).
 
